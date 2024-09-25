@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 const { getFileUrl } = require('../utils/image-upload');
 
 module.exports = {
+    //create employee
     createEmployee: asyncHandler(async (req, res) => {
         const { f_name, f_email, f_mobile, f_designation, f_gender, f_course } = req.body;
 
@@ -26,11 +27,13 @@ module.exports = {
         res.status(201).json({ message: "Employee created" });
     }),
 
+    //list employees
     listEmployees: asyncHandler(async (req, res) => {
         const employees = await Employee.find({}).sort({ createdAt: -1 });
         res.status(200).json(employees);
     }),
 
+    //edit employee details
     editEmployee: asyncHandler(async (req, res) => {
         const { id } = req.params;
 
@@ -40,6 +43,7 @@ module.exports = {
         //image upload
         const imageUrl = req.file ? getFileUrl(req, req.file) : null;
 
+        //edit employee details
         const updatedEmployee = await Employee.findByIdAndUpdate(id, {
             f_image: imageUrl,
             f_name: req.body.f_name || employee.f_name,
@@ -51,5 +55,17 @@ module.exports = {
         }, { new: true });
 
         res.status(200).json({ message: "Employee updated", employee: updatedEmployee });
+    }),
+
+    //delete an employee 
+    deleteEmployee: asyncHandler(async (req, res) => {
+        const { id } = req.params;
+
+        const employee = await Employee.findById(id);
+        if (!employee) return res.status(404).json({ message: "Employee not found" });
+
+        //delete employee
+        await Employee.findByIdAndDelete(id);
+        res.status(200).json({message: "Employee deleted"});
     })
 }
