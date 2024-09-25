@@ -24,5 +24,10 @@ module.exports = {
         });
 
         res.status(201).json({ message: "Employee created" });
+    }),
+
+    listEmployees: asyncHandler(async (req, res) => {
+        const employees = await Employee.find({}).sort({ createdAt: -1 });
+        res.status(200).json(employees);
     })
 }
