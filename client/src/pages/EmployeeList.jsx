@@ -10,16 +10,11 @@ import { baseUrl } from '../baseUrl';
 import toast from 'react-hot-toast';
 
 const EmployeeList = () => {
-
-    // Pagination states
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [employees, setEmployees] = useState([]);
-
-    // Search input state
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Handle pagination change
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -29,7 +24,7 @@ const EmployeeList = () => {
         setPage(0);
     };
 
-    //get employees
+    // Fetch employees from API
     const getEmployees = async () => {
         try {
             const response = await fetch(`${baseUrl}/employee/list`, {
@@ -38,37 +33,35 @@ const EmployeeList = () => {
             });
 
             const data = await response.json();
-            console.log(data);
             setEmployees(data);
         } catch (error) {
             toast.error(error.message || 'Something went wrong!');
-            console.log(error);
         }
-    }
+    };
 
     useEffect(() => {
         getEmployees();
-    },[])
+    }, []);
 
     // Handle delete employee
     const handleDelete = (id) => {
         toast.success('Employee deleted successfully');
     };
 
-    // Filtered employees based on search query
-    // const filteredEmployees = employees.filter((employee) =>
-    //     employee.name.toLowerCase().includes(searchQuery.toLowerCase())
-    // );
+    // Filter employees based on search query (case-insensitive)
+    const filteredEmployees = employees.filter((employee) =>
+        employee.f_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        employee.f_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        employee.f_mobile.includes(searchQuery)
+    );
 
     return (
         <AdminLayout>
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', height: '100vh' }}>
                 <Box sx={{ width: '100%', mt: 2 }}>
-                    {/* Top bar with total count, search, and create button */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h6">Total Employees: 2</Typography>
+                        <Typography variant="h6">Total Employees: {filteredEmployees.length}</Typography>
 
-                        {/* Search input */}
                         <TextField
                             variant="outlined"
                             size="small"
@@ -78,11 +71,9 @@ const EmployeeList = () => {
                             sx={{ mr: 2 }}
                         />
 
-                        {/* Create employee button */}
                         <Button variant="contained" color="primary">Create Employee</Button>
                     </Box>
 
-                    {/* Employee table */}
                     <TableContainer component={Paper}>
                         <Table>
                             <TableHead>
@@ -98,11 +89,11 @@ const EmployeeList = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                {filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((employee) => (
                                         <TableRow key={employee._id}>
                                             <TableCell>
-                                                <Avatar alt={employee.name} src={employee.f_image} />
+                                                <Avatar alt={employee.f_name} src={employee.f_image} />
                                             </TableCell>
                                             <TableCell>{employee.f_name}</TableCell>
                                             <TableCell>{employee.f_email}</TableCell>
@@ -114,7 +105,7 @@ const EmployeeList = () => {
                                                 <IconButton color="primary">
                                                     <EditIcon />
                                                 </IconButton>
-                                                <IconButton color="secondary" onClick={() => handleDelete(employee.id)}>
+                                                <IconButton color="secondary" onClick={() => handleDelete(employee._id)}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             </TableCell>
@@ -124,15 +115,14 @@ const EmployeeList = () => {
                         </Table>
                     </TableContainer>
 
-                    {/* Pagination */}
-                    {/* <TablePagination
+                    <TablePagination
                         component="div"
                         count={filteredEmployees.length}
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
-                    /> */}
+                    />
                 </Box>
             </Box>
         </AdminLayout>

@@ -67,5 +67,6 @@ module.exports = {
         //delete employee
         await Employee.findByIdAndDelete(id);
         res.status(200).json({message: "Employee deleted"});
-    })
+    }),
+
 }
