@@ -12,6 +12,8 @@ const LoginPage = () => {
         password: ''
     });
 
+    const [loading, setLoading] = useState(false)
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -24,6 +26,7 @@ const LoginPage = () => {
         e.preventDefault()
 
         try {
+            setLoading(true)
             const response = await fetch(`${baseUrl}/auth/login`, {
                 method: 'POST',
                 headers: {
@@ -35,12 +38,14 @@ const LoginPage = () => {
             const data = await response.json();
 
             if (!response.ok) {
+                setLoading(false)
                 toast.error(data.message);
                 return;
             }
 
             dispatch(setCredentials(data.user));
             navigate('/dashboard');
+            setLoading(false);
 
         } catch (error) {
             console.log(error);
@@ -79,13 +84,14 @@ const LoginPage = () => {
                         />
 
                         <Button
+                            disabled={loading}
                             type='submit'
                             variant='contained'
                             color='primary'
                             fullWidth
                             sx={{ marginTop: '1.5rem' }}
                         >
-                            Login
+                            {loading ? 'Loading...' : 'Login'}
                         </Button>
                     </form>
                 </Paper>
