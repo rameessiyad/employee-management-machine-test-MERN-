@@ -17,6 +17,6 @@ module.exports = {
         // generate token
         generateToken(admin._id, res);
 
-        res.status(200).json({ message: "Login Successful" });
+        res.status(200).json({ message: "Login Successful", user: admin });
     })
 }
