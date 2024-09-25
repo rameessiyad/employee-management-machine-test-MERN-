@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
     Typography, Button, TextField, Box, TablePagination, Avatar, IconButton
@@ -6,46 +6,15 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AdminLayout from '../components/Layout/AdminLayout';
+import { baseUrl } from '../baseUrl';
+import toast from 'react-hot-toast';
 
 const EmployeeList = () => {
-    // Sample data for employees
-    const [employees, setEmployees] = useState([
-        {
-            id: 1,
-            name: 'John Doe',
-            email: 'john@example.com',
-            designation: 'Manager',
-            mobile: '123-456-7890',
-            course: 'BCA',
-            createDate: '2024-01-15',
-            image: 'https://via.placeholder.com/40', // Placeholder image URL
-        },
-        {
-            id: 2,
-            name: 'Jane Smith',
-            email: 'jane@example.com',
-            designation: 'HR',
-            mobile: '987-654-3210',
-            course: 'MCA',
-            createDate: '2024-02-20',
-            image: 'https://via.placeholder.com/40',
-        },
-        {
-            id: 3,
-            name: 'Alex Johnson',
-            email: 'alex@example.com',
-            designation: 'Sales',
-            mobile: '555-555-5555',
-            course: 'BSC',
-            createDate: '2024-03-05',
-            image: 'https://via.placeholder.com/40',
-        },
-        // Add more employees here...
-    ]);
 
     // Pagination states
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [employees, setEmployees] = useState([]);
 
     // Search input state
     const [searchQuery, setSearchQuery] = useState('');
@@ -60,15 +29,36 @@ const EmployeeList = () => {
         setPage(0);
     };
 
+    //get employees
+    const getEmployees = async () => {
+        try {
+            const response = await fetch(`${baseUrl}/employee/list`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            const data = await response.json();
+            console.log(data);
+            setEmployees(data);
+        } catch (error) {
+            toast.error(error.message || 'Something went wrong!');
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        getEmployees();
+    },[])
+
     // Handle delete employee
     const handleDelete = (id) => {
-        setEmployees(employees.filter((employee) => employee.id !== id));
+        toast.success('Employee deleted successfully');
     };
 
     // Filtered employees based on search query
-    const filteredEmployees = employees.filter((employee) =>
-        employee.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // const filteredEmployees = employees.filter((employee) =>
+    //     employee.name.toLowerCase().includes(searchQuery.toLowerCase())
+    // );
 
     return (
         <AdminLayout>
@@ -76,7 +66,7 @@ const EmployeeList = () => {
                 <Box sx={{ width: '100%', mt: 2 }}>
                     {/* Top bar with total count, search, and create button */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h6">Total Employees: {filteredEmployees.length}</Typography>
+                        <Typography variant="h6">Total Employees: 2</Typography>
 
                         {/* Search input */}
                         <TextField
@@ -98,7 +88,6 @@ const EmployeeList = () => {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Image</TableCell>
-                                    <TableCell>ID</TableCell>
                                     <TableCell>Name</TableCell>
                                     <TableCell>Email</TableCell>
                                     <TableCell>Mobile</TableCell>
@@ -109,19 +98,18 @@ const EmployeeList = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredEmployees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                {employees.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((employee) => (
-                                        <TableRow key={employee.id}>
+                                        <TableRow key={employee._id}>
                                             <TableCell>
-                                                <Avatar alt={employee.name} src={employee.image} />
+                                                <Avatar alt={employee.name} src={employee.f_image} />
                                             </TableCell>
-                                            <TableCell>{employee.id}</TableCell>
-                                            <TableCell>{employee.name}</TableCell>
-                                            <TableCell>{employee.email}</TableCell>
-                                            <TableCell>{employee.mobile}</TableCell>
-                                            <TableCell>{employee.designation}</TableCell>
-                                            <TableCell>{employee.course}</TableCell>
-                                            <TableCell>{employee.createDate}</TableCell>
+                                            <TableCell>{employee.f_name}</TableCell>
+                                            <TableCell>{employee.f_email}</TableCell>
+                                            <TableCell>{employee.f_mobile}</TableCell>
+                                            <TableCell>{employee.f_designation}</TableCell>
+                                            <TableCell>{employee.f_course}</TableCell>
+                                            <TableCell>{employee.createdAt}</TableCell>
                                             <TableCell>
                                                 <IconButton color="primary">
                                                     <EditIcon />
@@ -137,18 +125,18 @@ const EmployeeList = () => {
                     </TableContainer>
 
                     {/* Pagination */}
-                    <TablePagination
+                    {/* <TablePagination
                         component="div"
                         count={filteredEmployees.length}
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
+                    /> */}
                 </Box>
             </Box>
         </AdminLayout>
     );
 };
 
-export default EmployeeList;
+export default memo(EmployeeList);

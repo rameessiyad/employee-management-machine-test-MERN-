@@ -16,43 +16,58 @@ import {
     InputLabel,
 } from '@mui/material';
 import AdminLayout from '../components/Layout/AdminLayout';
+import { baseUrl } from '../baseUrl';
+import { toast } from 'react-hot-toast'
 
 const AddEmployee = ({ onAddEmployee }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [gender, setGender] = useState(''); // State for gender
-    const [designation, setDesignation] = useState(''); // State for designation
-    const [course, setCourse] = useState(''); // State for course
-    const [mobile, setMobile] = useState(''); // State for mobile number
-    const [image, setImage] = useState(null); // State for image
+    const [gender, setGender] = useState('');
+    const [designation, setDesignation] = useState('');
+    const [course, setCourse] = useState('');
+    const [mobile, setMobile] = useState('');
+    const [image, setImage] = useState(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
     // Handle form submission
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
+        // Check if all required fields are filled
         if (name && email && gender && designation && course && mobile && image) {
-            const newEmployee = {
-                id: Date.now(), // Generate a unique ID (could be improved)
-                name,
-                email,
-                gender,
-                designation,
-                course,
-                mobile,
-                image,
-            };
+            const formData = new FormData();
+            formData.append('f_name', name);
+            formData.append('f_email', email);
+            formData.append('f_gender', gender);
+            formData.append('f_designation', designation);
+            formData.append('f_course', course);
+            formData.append('f_mobile', mobile);
+            formData.append('f_image', image);
 
-            onAddEmployee(newEmployee); // Call the function to add employee
-            setOpenSnackbar(true); // Show success message
-            // Reset fields
-            setName('');
-            setEmail('');
-            setGender('');
-            setDesignation('');
-            setCourse('');
-            setMobile('');
-            setImage(null);
+            try {
+                const response = await fetch(`${baseUrl}/employee/create`, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include',
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setOpenSnackbar(true);
+                    // Reset form fields
+                    setName('');
+                    setEmail('');
+                    setGender('');
+                    setDesignation('');
+                    setCourse('');
+                    setMobile('');
+                    setImage(null);
+                } else {
+                    toast.error(data.message);
+                }
+            } catch (error) {
+                toast.error(data.messgae || "Something went wrong. Please try again later.");
+            }
         }
     };
 
@@ -92,9 +107,9 @@ const AddEmployee = ({ onAddEmployee }) => {
                             value={gender}
                             onChange={(e) => setGender(e.target.value)}
                         >
-                            <FormControlLabel value="male" control={<Radio />} label="Male" />
-                            <FormControlLabel value="female" control={<Radio />} label="Female" />
-                            <FormControlLabel value="other" control={<Radio />} label="Other" />
+                            <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                            <FormControlLabel value="Female" control={<Radio />} label="Female" />
+                            <FormControlLabel value="Other" control={<Radio />} label="Other" />
                         </RadioGroup>
                     </FormControl>
                     <FormControl fullWidth variant="outlined" margin="normal" required>
@@ -104,7 +119,7 @@ const AddEmployee = ({ onAddEmployee }) => {
                             onChange={(e) => setDesignation(e.target.value)}
                         >
                             <MenuItem value="HR">HR</MenuItem>
-                            <MenuItem value="Business">Business</MenuItem>
+                            <MenuItem value="Manager">Manager</MenuItem>
                             <MenuItem value="Sales">Sales</MenuItem>
                         </Select>
                     </FormControl>
@@ -130,10 +145,10 @@ const AddEmployee = ({ onAddEmployee }) => {
                     />
                     <TextField
                         type="file"
-                        onChange={(e) => setImage(e.target.files[0])} // Save the selected image file
+                        onChange={(e) => setImage(e.target.files[0])}
                         fullWidth
                         margin="normal"
-                        inputProps={{ accept: 'image/*' }} // Accept only image files
+                        inputProps={{ accept: 'image/*' }}
                     />
                     <Button variant="contained" color="primary" type="submit" fullWidth>
                         Add Employee
