@@ -6,9 +6,11 @@ const isAuth = asyncHandler(async (req,res,next) => {
     let token;
 
     //get token from cookies
-    if(res.cookies && res.cookies.token) {
+    if(req.cookies && req.cookies.token) {
         token = req.cookies.token;
+        console.log("Token: ", token);
     }else {
+        console.log("Token not found");
         return res.status(401).json({message: 'Unauthorized'});
     }
 
@@ -19,6 +21,7 @@ const isAuth = asyncHandler(async (req,res,next) => {
         //get user from the decoded token
         req.user = await Admin.findById(decoded.id).select('-password');
         if(!req.user) {
+            console.log("User not found");
             return res.status(401).json({message: 'Unauthorized, user not found'});
         }
         next();

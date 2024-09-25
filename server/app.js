@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 const adminRoute = require('./routes/admin-route');
 const employeeRoute = require('./routes/employee-route');
 
@@ -19,6 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(cookieParser());
+
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 //end-points
 app.use('/api/v1/auth', adminRoute)
