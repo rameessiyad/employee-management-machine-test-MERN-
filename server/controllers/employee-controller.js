@@ -66,7 +66,15 @@ module.exports = {
 
         //delete employee
         await Employee.findByIdAndDelete(id);
-        res.status(200).json({message: "Employee deleted"});
+        res.status(200).json({ message: "Employee deleted" });
+    }),
+
+    //find an employee by id
+    findEmployee: asyncHandler(async (req, res) => {
+        const { id } = req.params;
+        const employee = await Employee.findById(id);
+        if (!employee) return res.status(404).json({ message: "Employee not found" });
+        res.status(200).json(employee);
     }),
 
 }

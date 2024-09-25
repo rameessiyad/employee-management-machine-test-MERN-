@@ -1,8 +1,17 @@
 import React from 'react'
 import { AppBar, Button, Toolbar, Typography } from '@mui/material'
+import { useDispatch } from 'react-redux'
+import { logout } from '../../redux/slices/authSlice'
 
 const TopBar = () => {
   const drawerWidth = 260
+
+  const dispatch = useDispatch()
+
+  const handleLogout = () => {
+    dispatch(logout());
+  }
+
   return (
     <AppBar
       position="fixed"
@@ -17,7 +26,7 @@ const TopBar = () => {
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           Welcome Admin Panel
         </Typography>
-        <Button variant="contained" sx={{ backgroundColor: '#FF6F61' }}>
+        <Button variant="contained" sx={{ backgroundColor: '#FF6F61' }} onClick={handleLogout} >
           Logout
         </Button>
       </Toolbar>

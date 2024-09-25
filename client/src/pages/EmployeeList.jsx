@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AdminLayout from '../components/Layout/AdminLayout';
 import { baseUrl } from '../baseUrl';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 const EmployeeList = () => {
     const [page, setPage] = useState(0);
@@ -115,9 +116,11 @@ const EmployeeList = () => {
                                             <TableCell>{employee.f_course}</TableCell>
                                             <TableCell>{employee.createdAt}</TableCell>
                                             <TableCell>
-                                                <IconButton color="primary">
-                                                    <EditIcon />
-                                                </IconButton>
+                                                <Link to={`/dashboard/edit-employee/${employee._id}`}>
+                                                    <IconButton color="primary">
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Link>
                                                 <IconButton color="secondary" onClick={() => handleDelete(employee._id)}>
                                                     <DeleteIcon />
                                                 </IconButton>
