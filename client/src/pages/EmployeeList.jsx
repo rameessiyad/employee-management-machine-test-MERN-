@@ -44,8 +44,21 @@ const EmployeeList = () => {
     }, []);
 
     // Handle delete employee
-    const handleDelete = (id) => {
-        toast.success('Employee deleted successfully');
+    const handleDelete = async (id) => {
+        const response = await fetch(`${baseUrl}/employee/delete/${id}`, {
+            method: 'DELETE',
+            credentials: 'include',
+        })
+
+        const data = await response.json();
+        if (response.ok) {
+            toast.success(data.message);
+            getEmployees();
+        }
+
+        if (!response.ok) {
+            toast.error(data.message);
+        }
     };
 
     // Filter employees based on search query (case-insensitive)
