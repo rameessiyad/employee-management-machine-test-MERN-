@@ -49,15 +49,13 @@ const EmployeeList = () => {
         const response = await fetch(`${baseUrl}/employee/delete/${id}`, {
             method: 'DELETE',
             credentials: 'include',
-        })
+        });
 
         const data = await response.json();
         if (response.ok) {
             toast.success(data.message);
             getEmployees();
-        }
-
-        if (!response.ok) {
+        } else {
             toast.error(data.message);
         }
     };
@@ -68,6 +66,13 @@ const EmployeeList = () => {
         employee.f_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         employee.f_mobile.includes(searchQuery)
     );
+
+    // Function to format the created date
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const date = new Date(dateString);
+        return date.toLocaleDateString(undefined, options);
+    };
 
     return (
         <AdminLayout>
@@ -114,7 +119,7 @@ const EmployeeList = () => {
                                             <TableCell>{employee.f_mobile}</TableCell>
                                             <TableCell>{employee.f_designation}</TableCell>
                                             <TableCell>{employee.f_course}</TableCell>
-                                            <TableCell>{employee.createdAt}</TableCell>
+                                            <TableCell>{formatDate(employee.createdAt)}</TableCell> {/* Format the date */}
                                             <TableCell>
                                                 <Link to={`/dashboard/edit-employee/${employee._id}`}>
                                                     <IconButton color="primary">

@@ -2,14 +2,17 @@ import React from 'react'
 import { AppBar, Button, Toolbar, Typography } from '@mui/material'
 import { useDispatch } from 'react-redux'
 import { logout } from '../../redux/slices/authSlice'
+import { useNavigate } from 'react-router-dom'
 
 const TopBar = () => {
   const drawerWidth = 260
 
   const dispatch = useDispatch()
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(logout());
+    navigate('/');
   }
 
   return (
