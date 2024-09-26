@@ -90,7 +90,9 @@ const EmployeeList = () => {
                             sx={{ mr: 2 }}
                         />
 
-                        <Button variant="contained" color="primary">Create Employee</Button>
+                        <Link to="/dashboard/add-employee">
+                            <Button variant="contained" color="primary">Create Employee</Button>
+                        </Link>
                     </Box>
 
                     <TableContainer component={Paper}>
