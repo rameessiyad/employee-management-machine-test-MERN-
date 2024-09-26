@@ -45,7 +45,7 @@ module.exports = {
 
         //edit employee details
         const updatedEmployee = await Employee.findByIdAndUpdate(id, {
-            f_image: imageUrl,
+            f_image: imageUrl || employee.f_image,
             f_name: req.body.f_name || employee.f_name,
             f_email: req.body.f_email || employee.f_email,
             f_mobile: req.body.f_mobile || employee.f_mobile,

@@ -18,7 +18,7 @@ import {
 import AdminLayout from '../components/Layout/AdminLayout';
 import { baseUrl } from '../baseUrl';
 import { toast } from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const EditEmployee = ({ onUpdateEmployee }) => {
     const [name, setName] = useState('');
@@ -32,6 +32,8 @@ const EditEmployee = ({ onUpdateEmployee }) => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [loading, setLoading] = useState(true); // New loading state
     const { id } = useParams();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Fetch employee data when the component mounts
@@ -78,8 +80,12 @@ const EditEmployee = ({ onUpdateEmployee }) => {
             formData.append('f_designation', designation);
             formData.append('f_course', course);
             formData.append('f_mobile', mobile);
+
+            // Append the new image if available, otherwise append the current image URL
             if (image) {
                 formData.append('f_image', image);
+            } else {
+                formData.append('f_image', currentImage);
             }
 
             try {
@@ -101,18 +107,28 @@ const EditEmployee = ({ onUpdateEmployee }) => {
                     setCourse('');
                     setMobile('');
                     setImage(null);
-                    setCurrentImage(data.f_image); // Update current image if changed
+                    setCurrentImage(data.f_image);
+
+                    navigate('/dashboard/employee-list')
                 } else {
                     const errorData = await response.json();
                     toast.error(errorData.message || "Failed to update employee.");
                 }
             } catch (error) {
-                toast.error("Something went wrong while updating employee.");
+                console.log("Something went wrong")
             }
         } else {
             toast.error("Please fill in all required fields.");
         }
     };
+
+    useEffect(() => {
+        if (openSnackbar) {
+            navigate('/dashboard/employee-list');
+        }
+    }, [openSnackbar, navigate]);
+
+
 
     // Close snackbar
     const handleCloseSnackbar = () => {
@@ -139,9 +155,9 @@ const EditEmployee = ({ onUpdateEmployee }) => {
                                 width: '50%',
                                 height: 'auto',
                                 borderRadius: '50%',
-                                border: '2px solid #4caf50', 
-                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', 
-                                transition: 'transform 0.2s', 
+                                border: '2px solid #4caf50',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                transition: 'transform 0.2s',
                             }}
                             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                             onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
