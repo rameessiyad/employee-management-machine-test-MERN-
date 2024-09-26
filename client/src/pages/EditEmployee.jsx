@@ -112,7 +112,7 @@ const EditEmployee = ({ onUpdateEmployee }) => {
                     navigate('/dashboard/employee-list')
                 } else {
                     const errorData = await response.json();
-                    toast.error(errorData.message || "Failed to update employee.");
+                    toast.error(errorData.message || "Failed to update employee");
                 }
             } catch (error) {
                 console.log("Something went wrong")
